@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pro Video Player</title>
+    <title>Pro Video Player - Final Version</title>
 
     <!-- Google Fonts: Poppins -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -59,11 +59,12 @@
             z-index: 25; opacity: 0; transition: opacity 0.3s ease-out; pointer-events: none;
         }
         
-        /* Original Premium Player Styling */
+        /* Original Premium Player Styling - WHITE SETTINGS MENU */
         :root { --plyr-color-main: var(--theme-color); --plyr-control-radius: 8px; }
         .plyr--video .plyr__control:hover { background: var(--theme-color); }
         .plyr__progress input { box-shadow: var(--theme-glow); }
-        .plyr__menu__container { background: rgba(30, 30, 30, 0.9); backdrop-filter: blur(5px); }
+        /* NOTE: The dark style for .plyr__menu__container has been REMOVED to restore the white menu */
+
         .hidden { display: none; }
     </style>
 </head>
@@ -97,7 +98,7 @@
 
                 const player = new Plyr(videoElement, {
                     controls: ['rewind', 'play', 'fast-forward', 'progress', 'current-time', 'mute', 'settings', 'fullscreen'],
-                    settings: ['speed', 'loop'], // Start with a minimal set, we will add the rest manually
+                    settings: ['speed', 'loop'], // We will add the rest manually
                 });
                 window.player = player;
 
@@ -109,7 +110,7 @@
                     const currentTime = new Date().getTime();
                     const tapLength = currentTime - lastTap;
                     if (tapLength < 300 && tapLength > 0) {
-                        event.preventDefault(); // Prevents fullscreen
+                        event.preventDefault(); // This is the crucial fix for fullscreen
                         const rect = playerWrapper.getBoundingClientRect();
                         const pos = event.clientX - rect.left;
                         if (pos < rect.width / 2) { player.rewind(10); showSkipIndicator('- 10s'); } 
@@ -123,32 +124,31 @@
                     setTimeout(() => { skipIndicator.style.opacity = 0; }, 500);
                 }
 
-                // --- THIS IS THE NEW LOGIC TO FORCE SETTINGS MENUS ---
+                // --- NEW ROBUST LOGIC TO ALWAYS SHOW SETTINGS MENUS ---
                 player.on('ready', () => {
-                    forceMissingSettings(player);
+                    forceRenderAllSettings(player);
                 });
 
-                function forceMissingSettings(player) {
+                function forceRenderAllSettings(player) {
                     const settingsMenu = player.elements.menu.querySelector('ul');
                     if (!settingsMenu) return;
 
-                    // Helper to check if a menu item already exists
-                    const hasSetting = (name) => !!settingsMenu.querySelector(`[data-plyr="${name}"]`);
+                    const existingSettings = Array.from(settingsMenu.children).map(li => li.querySelector('button')?.dataset.plyr);
 
                     // 1. Force Quality Menu
-                    if (!hasSetting('quality')) {
-                        const defaultQuality = { html: `Auto <span class="plyr__menu__item__badge">HD</span>` };
-                        createForcedMenuItem('quality', 'Quality', 'Auto', [defaultQuality]);
+                    if (!existingSettings.includes('quality')) {
+                        const qualityItem = createPlaceholderMenuItem('Quality', 'Auto', () => alert('Only Auto quality is available for this stream.'));
+                        settingsMenu.prepend(qualityItem);
                     }
-                    // 2. Force Captions Menu
-                    if (!hasSetting('captions')) {
-                        createForcedMenuItem('captions', 'Subtitles', 'Off', [{ html: 'Off' }]);
+                    // 2. Force Captions/Subtitles Menu
+                    if (!existingSettings.includes('captions')) {
+                        const captionsItem = createPlaceholderMenuItem('Subtitles', 'Off', () => alert('No subtitles found for this video.'));
+                        settingsMenu.prepend(captionsItem);
                     }
-                    // 3. Force Audio Menu (HLS-only feature, so we create a placeholder)
-                    if (!player.isHTML5) { // Check if it's not a simple MP4
-                         if (!hasSetting('audio')) {
-                             createForcedMenuItem('audio', 'Audio', 'Default', [{ html: 'Default' }]);
-                         }
+                    // 3. Force Audio Menu
+                    if (!existingSettings.includes('audio')) {
+                         const audioItem = createPlaceholderMenuItem('Audio', 'Default', () => alert('Only the default audio track is available.'));
+                         settingsMenu.prepend(audioItem);
                     }
                     
                     // Add separator and custom items
@@ -158,28 +158,23 @@
                     settingsMenu.appendChild(separator);
                     
                     settingsMenu.appendChild(createCustomMenuItem('Accessibility', () => alert('Accessibility options coming soon!')));
-                    settingsMenu.appendChild(createCustomMenuItem('Subtitle Editor', () => alert('Subtitle Editor feature is planned.')));
+                    settingsMenu.appendChild(createCustomMenuItem('Subtitle Editor', () => alert('Subtitle Editor is a planned feature.')));
                 }
                 
-                function createForcedMenuItem(name, label, defaultValue, options) {
-                    const settingsMenu = player.elements.menu.querySelector('ul');
+                function createPlaceholderMenuItem(label, badge, onClick) {
                     const li = document.createElement('li');
                     li.className = 'plyr__menu__item';
                     li.innerHTML = `
-                        <button type="button" class="plyr__control" role="menuitemradio" aria-haspopup="true">
+                        <button type="button" class="plyr__control" role="menuitemradio">
                             <span class="plyr__menu__item__label">${label}</span>
-                            <span class="plyr__menu__item__badge" role="presentation">${defaultValue}</span>
+                            <span class="plyr__menu__item__badge" role="presentation">${badge}</span>
                         </button>`;
-                    
-                    // This is a simplified version. Clicking will just toggle the main menu for now.
-                    // A full submenu implementation is extremely complex.
-                    li.addEventListener('click', () => {
-                       player.toggleMenu(false);
-                       alert(`Currently selected ${label}: ${defaultValue}. No other options available for this video.`);
+                    li.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        player.toggleMenu(false);
+                        onClick();
                     });
-                    
-                    // Add to the top of the menu
-                    settingsMenu.prepend(li);
+                    return li;
                 }
 
                 function createCustomMenuItem(text, onClick) {
