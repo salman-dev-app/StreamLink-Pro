@@ -3,49 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Premium Video Embedder - Default Perfected</title>
+    <title>Premium Video Embedder - Your Version Perfected</title>
+
+    <!-- Google Fonts: Poppins -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family/Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <!-- Plyr.io Player CSS -->
     <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
-    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 
     <style>
         :root {
-            --theme-color: #9D00FF; --theme-glow: 0 0 15px rgba(157, 0, 255, 0.6);
-            --bg-color: #0f0f1a; --surface-color: rgba(22, 22, 34, 0.8);
-            --text-color: #f0f0f0; --text-muted: #a0a0b0;
+            --theme-color: #9D00FF; /* Vibrant Purple/Neon */
+            --theme-glow: 0 0 15px rgba(157, 0, 255, 0.6);
+            --bg-color: #0f0f1a;
+            --surface-color: rgba(22, 22, 34, 0.8);
+            --text-color: #f0f0f0;
+            --text-muted: #a0a0b0;
         }
         body, html { margin: 0; padding: 0; font-family: 'Poppins', sans-serif; background-color: var(--bg-color); color: var(--text-color); }
 
-        /* Homepage Styling */
+        /* Form Container Styling */
         .form-container { display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
         .content-box { background: var(--surface-color); padding: 40px; border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.1); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3); backdrop-filter: blur(10px); width: 100%; max-width: 600px; text-align: center; }
-        h1 { font-size: 2.5rem; } .tagline { color: var(--text-muted); margin-bottom: 30px; }
+        h1 { font-size: 2.5rem; }
+        .tagline { color: var(--text-muted); margin-bottom: 30px; font-size: 1rem; }
         input, textarea { width: 100%; padding: 15px; margin-bottom: 20px; border: 1px solid rgba(255, 255, 255, 0.2); background-color: rgba(0, 0, 0, 0.3); color: var(--text-color); border-radius: 8px; box-sizing: border-box; font-size: 1rem; }
         button { width: 100%; padding: 15px; background: var(--theme-color); color: white; border: none; border-radius: 8px; font-size: 1.1rem; font-weight: 600; cursor: pointer; transition: all 0.2s; box-shadow: var(--theme-glow); }
         
-        /* Player Container */
+        /* Player Container Styling */
         .player-container { width: 100vw; height: 100vh; background-color: #000; }
-        
-        /* Plyr Player Theme */
+
+        /* --- Plyr Player Style --- */
         :root { --plyr-color-main: var(--theme-color); --plyr-control-radius: 8px; --plyr-font-family: 'Poppins', sans-serif; }
-        .plyr--video .plyr__control:hover { background: var(--theme-color); }
-        
-        /* This class will be added by JS to fix the menu position */
-        .plyr__menu__container.shifted {
-            left: auto;
-            right: 5px;
-        }
+        .plyr--video .plyr__control:hover, .plyr--video .plyr__control[aria-expanded=true] { background: var(--theme-color); }
 
         .hidden { display: none; }
     </style>
 </head>
 <body>
+
     <div id="form-container" class="form-container"></div>
     <div id="player-container" class="player-container hidden">
         <video id="player" playsinline controls></video>
     </div>
+
+    <script src="https://cdn.plyr.io/3.7.8/plyr.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
@@ -69,22 +74,23 @@
                 }
 
                 const player = new Plyr(videoElement, {
-                    // Controls updated as per your latest request
+                    // Controls updated as per your request
                     controls: [
-                        'play-large', 'play', 'progress', 'current-time', 'mute', /* 'volume' slider is removed */
-                        'captions', 'settings', 'pip', 'airplay', 'fullscreen'
+                        'play-large', 'rewind', 'play', 'fast-forward', 'progress',
+                        'current-time', 'duration', 'mute', 'volume', 'captions', 'settings',
+                        'pip', 'airplay', 'fullscreen'
                     ],
                     settings: ['captions', 'quality', 'speed', 'loop'],
+                    tooltips: { controls: true, seek: true }
                 });
                 window.player = player;
 
-                // --- STABLE FIXES & FUNCTIONALITY ---
+                // --- NEW FUNCTIONALITY & FIXES ---
                 const playerWrapper = player.elements.container.querySelector('.plyr__video-wrapper');
 
                 // 1. Double-tap to fullscreen and rotate
                 playerWrapper.addEventListener('dblclick', () => {
                     player.fullscreen.enter();
-                    setOrientation('lock');
                 });
                 
                 // 2. Auto-rotate on fullscreen
@@ -96,26 +102,6 @@
                 }
                 player.on('enterfullscreen', () => setOrientation('lock'));
                 player.on('exitfullscreen', () => setOrientation('unlock'));
-
-                // 3. Permanent fix for settings menu overflow
-                player.on('ready', () => {
-                    const settingsBtn = player.elements.buttons.settings;
-                    if (settingsBtn) {
-                        settingsBtn.addEventListener('click', () => {
-                            requestAnimationFrame(() => {
-                                const menu = player.elements.menu;
-                                if (!menu) return;
-                                const menuRect = menu.getBoundingClientRect();
-                                const playerRect = player.elements.container.getBoundingClientRect();
-                                if (menuRect.right > playerRect.right) {
-                                    menu.classList.add('shifted');
-                                } else {
-                                    menu.classList.remove('shifted');
-                                }
-                            });
-                        });
-                    }
-                });
 
             } else {
                 // --- HOMEPAGE FORM LOGIC ---
