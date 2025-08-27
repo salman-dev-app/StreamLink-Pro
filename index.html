@@ -3,43 +3,74 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Premium Video Embedder - Perfected</title>
-
-    <!-- Google Fonts: Poppins -->
+    <title>Premium Video Embedder - Final Customization</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
-
-    <!-- Plyr.io Player CSS -->
     <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 
     <style>
         :root {
-            --theme-color: #9D00FF; /* Vibrant Purple/Neon */
-            --theme-glow: 0 0 15px rgba(157, 0, 255, 0.6);
-            --bg-color: #0f0f1a;
-            --surface-color: rgba(22, 22, 34, 0.8);
-            --text-color: #f0f0f0;
-            --text-muted: #a0a0b0;
+            --theme-color: #9D00FF; --theme-glow: 0 0 15px rgba(157, 0, 255, 0.6);
+            --bg-color: #0f0f1a; --surface-color: rgba(22, 22, 34, 0.8);
+            --text-color: #f0f0f0; --text-muted: #a0a0b0;
         }
         body, html { margin: 0; padding: 0; font-family: 'Poppins', sans-serif; background-color: var(--bg-color); color: var(--text-color); }
 
-        /* Form Container Styling */
+        /* Homepage Styling */
         .form-container { display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
         .content-box { background: var(--surface-color); padding: 40px; border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.1); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3); backdrop-filter: blur(10px); width: 100%; max-width: 600px; text-align: center; }
-        h1 { font-size: 2.5rem; font-weight: 700; color: #fff; margin-bottom: 10px; }
-        .tagline { color: var(--text-muted); margin-bottom: 30px; font-size: 1rem; }
-        input[type="url"], input[type="text"], textarea { width: 100%; padding: 15px; margin-bottom: 20px; border: 1px solid rgba(255, 255, 255, 0.2); background-color: rgba(0, 0, 0, 0.3); color: var(--text-color); border-radius: 8px; box-sizing: border-box; font-size: 1rem; }
-        input[type="url"]:focus { outline: none; border-color: var(--theme-color); box-shadow: var(--theme-glow); }
+        h1 { font-size: 2.5rem; } .tagline { color: var(--text-muted); margin-bottom: 30px; }
+        input, textarea { width: 100%; padding: 15px; margin-bottom: 20px; border: 1px solid rgba(255, 255, 255, 0.2); background-color: rgba(0, 0, 0, 0.3); color: var(--text-color); border-radius: 8px; box-sizing: border-box; font-size: 1rem; }
         button { width: 100%; padding: 15px; background: var(--theme-color); color: white; border: none; border-radius: 8px; font-size: 1.1rem; font-weight: 600; cursor: pointer; transition: all 0.2s; box-shadow: var(--theme-glow); }
         
-        /* Player Container Styling */
+        /* Player Container */
         .player-container { width: 100vw; height: 100vh; background-color: #000; }
         
-        /* --- Custom Plyr Player Style --- */
+        /* --- FINAL Plyr Player Customization --- */
         :root { --plyr-color-main: var(--theme-color); --plyr-control-radius: 8px; --plyr-font-family: 'Poppins', sans-serif; }
-        .plyr--video .plyr__control.plyr__tab-focus, .plyr--video .plyr__control:hover, .plyr--video .plyr__control[aria-expanded=true] { background: var(--theme-color); }
-        .plyr__menu__container.shifted { left: auto; right: 5px; }
+        .plyr--video .plyr__control:hover { background: var(--theme-color); }
+
+        /* Always show the large play button when paused */
+        .plyr--video.plyr--paused .plyr__control[data-plyr='play'] {
+            display: block !important;
+            z-index: 10;
+        }
+
+        /* NEW: Center skip buttons */
+        .plyr__video-wrapper::after,
+        .plyr__video-wrapper::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 50px;
+            height: 50px;
+            background-color: rgba(0, 0, 0, 0.4);
+            border-radius: 50%;
+            background-repeat: no-repeat;
+            background-position: center;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+            cursor: pointer;
+            z-index: 9;
+        }
+        .plyr--paused .plyr__video-wrapper::after,
+        .plyr--paused .plyr__video-wrapper::before {
+            opacity: 1;
+        }
+        /* Forward button */
+        .plyr__video-wrapper::after {
+            right: 25%;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M4 18l8.5-6L4 6v12zm9-12v12l8.5-6L13 6z'/%3E%3C/svg%3E");
+        }
+        /* Rewind button */
+        .plyr__video-wrapper::before {
+            left: 25%;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M11 18V6l-8.5 6 8.5 6zm.5-6l8.5 6V6l-8.5 6z'/%3E%3C/svg%3E");
+        }
+
         .hidden { display: none; }
     </style>
 </head>
@@ -48,9 +79,6 @@
     <div id="player-container" class="player-container hidden">
         <video id="player" playsinline controls></video>
     </div>
-
-    <script src="https://cdn.plyr.io/3.7.8/plyr.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
@@ -74,53 +102,54 @@
                 }
 
                 const player = new Plyr(videoElement, {
-                    // Controls updated as per your request (rewind/fast-forward are back)
+                    // Controls updated: Volume slider removed
                     controls: [
-                        'play-large', 'rewind', 'play', 'fast-forward', 'progress',
-                        'current-time', 'duration', 'mute', 'volume', 'captions', 'settings',
-                        'pip', 'airplay', 'fullscreen'
+                        'play-large', 'play', 'progress',
+                        'current-time', 'duration', 'mute', /* 'volume' is removed */ 'captions', 'settings',
+                        'pip', 'fullscreen'
                     ],
                     settings: ['captions', 'quality', 'speed', 'loop'],
                 });
                 window.player = player;
 
                 // --- NEW FUNCTIONALITY & FIXES ---
-                const playerWrapper = player.elements.container.querySelector('.plyr__video-wrapper');
-
-                // 1. Double-tap to fullscreen and rotate
-                playerWrapper.addEventListener('dblclick', () => {
-                    player.fullscreen.enter();
-                    setOrientation('lock');
-                });
-                
-                // 2. Auto-rotate on fullscreen
-                async function setOrientation(mode) {
-                    try {
-                        if (mode === 'lock' && screen.orientation) await screen.orientation.lock('landscape');
-                        else if (mode === 'unlock' && screen.orientation) screen.orientation.unlock();
-                    } catch (err) { console.warn("Screen orientation API is not supported."); }
-                }
-                player.on('enterfullscreen', () => setOrientation('lock'));
-                player.on('exitfullscreen', () => setOrientation('unlock'));
-
-                // 3. Permanent fix for settings menu overflow
                 player.on('ready', () => {
-                    const settingsBtn = player.elements.buttons.settings;
-                    if (settingsBtn) {
-                        settingsBtn.addEventListener('click', () => {
-                            requestAnimationFrame(() => {
-                                const menu = player.elements.menu;
-                                if (!menu) return;
-                                const menuRect = menu.getBoundingClientRect();
-                                const playerRect = player.elements.container.getBoundingClientRect();
-                                if (menuRect.right > playerRect.right) {
-                                    menu.classList.add('shifted');
-                                } else {
-                                    menu.classList.remove('shifted');
-                                }
-                            });
-                        });
-                    }
+                    const playerWrapper = player.elements.container.querySelector('.plyr__video-wrapper');
+
+                    // Create and append skip buttons
+                    const rewindCenterBtn = document.createElement('div');
+                    rewindCenterBtn.className = 'plyr__video-wrapper::before';
+                    rewindCenterBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        player.rewind(10);
+                    });
+
+                    const forwardCenterBtn = document.createElement('div');
+                    forwardCenterBtn.className = 'plyr__video-wrapper::after';
+                    forwardCenterBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        player.forward(10);
+                    });
+                    
+                    // Note: The buttons are created with CSS pseudo-elements for simplicity.
+                    // The click events are handled on the wrapper.
+                    playerWrapper.addEventListener('click', (e) => {
+                        // Check if the click was on the left or right side for skipping
+                        const rect = playerWrapper.getBoundingClientRect();
+                        const clickX = e.clientX - rect.left;
+                        
+                        // Define clickable areas for skip buttons (e.g., 20% to 35% from each side)
+                        const leftAreaStart = rect.width * 0.20;
+                        const leftAreaEnd = rect.width * 0.35;
+                        const rightAreaStart = rect.width * 0.65;
+                        const rightAreaEnd = rect.width * 0.80;
+
+                        if (clickX > leftAreaStart && clickX < leftAreaEnd) {
+                            player.rewind(10);
+                        } else if (clickX > rightAreaStart && clickX < rightAreaEnd) {
+                            player.forward(10);
+                        }
+                    });
                 });
 
             } else {
