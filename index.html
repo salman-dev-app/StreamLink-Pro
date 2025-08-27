@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pro Video Player - The Final Version</title>
+    <title>The Final Pro Player</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
@@ -20,83 +20,22 @@
             background-color: var(--bg-color); color: var(--text-color); overflow: hidden;
         }
 
-        /* --- Homepage/Form Styling --- */
-        .form-container {
-            display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px;
-            background-image: radial-gradient(circle at 20% 20%, rgba(157, 0, 255, 0.2) 0%, transparent 30%),
-                              radial-gradient(circle at 80% 80%, rgba(0, 123, 255, 0.2) 0%, transparent 30%);
-        }
-        .content-box {
-            background: var(--surface-color); padding: 40px; border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3); backdrop-filter: blur(10px); width: 100%; max-width: 600px; text-align: center;
-        }
-        h1 { font-size: 2.5rem; }
-        .tagline { color: var(--text-muted); margin-bottom: 30px; }
-        input[type="url"], input[type="text"], textarea {
-            width: 100%; padding: 15px; margin-bottom: 20px; border: 1px solid rgba(255, 255, 255, 0.2);
-            background-color: rgba(0, 0, 0, 0.3); color: var(--text-color); border-radius: 8px; box-sizing: border-box; font-size: 1rem;
-        }
-        button {
-            width: 100%; padding: 15px; background: var(--theme-color); color: white; border: none;
-            border-radius: 8px; font-size: 1.1rem; font-weight: 600; cursor: pointer; transition: all 0.2s; box-shadow: var(--theme-glow);
-        }
+        /* Homepage Styling */
+        .form-container { display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
+        .content-box { background: var(--surface-color); padding: 40px; border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.1); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3); backdrop-filter: blur(10px); width: 100%; max-width: 600px; text-align: center; }
+        h1 { font-size: 2.5rem; } .tagline { color: var(--text-muted); margin-bottom: 30px; }
+        input, textarea { width: 100%; padding: 15px; margin-bottom: 20px; border: 1px solid rgba(255, 255, 255, 0.2); background-color: rgba(0, 0, 0, 0.3); color: var(--text-color); border-radius: 8px; box-sizing: border-box; font-size: 1rem; }
+        button { width: 100%; padding: 15px; background: var(--theme-color); color: white; border: none; border-radius: 8px; font-size: 1.1rem; font-weight: 600; cursor: pointer; transition: all 0.2s; box-shadow: var(--theme-glow); }
         
         /* Player & Overlay */
         .player-container { width: 100vw; height: 100vh; background-color: #000; position: relative; }
-        .skip-indicator {
-            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: white;
-            background: rgba(0, 0, 0, 0.6); padding: 10px 20px; border-radius: 20px; font-size: 1.2rem;
-            z-index: 25; opacity: 0; transition: opacity 0.3s ease-out; pointer-events: none;
-        }
+        .skip-indicator { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: white; background: rgba(0, 0, 0, 0.6); padding: 10px 20px; border-radius: 20px; font-size: 1.2rem; z-index: 50; opacity: 0; transition: opacity 0.3s ease-out; pointer-events: none; }
         
-        /* --- FINAL PLAYER STYLING (AniWave Inspired) --- */
+        /* FINAL Player Theme - White Settings Menu */
         :root { --plyr-color-main: var(--theme-color); --plyr-control-radius: 8px; }
         .plyr--video .plyr__control:hover { background: var(--theme-color); }
         .plyr__progress input { box-shadow: var(--theme-glow); }
-        
-        /* This is the new style for the side-menu like aniwave */
-        .plyr__menu__container {
-            position: absolute;
-            bottom: calc(var(--plyr-control-spacing, 10px) + var(--plyr-control-height, 40px));
-            right: var(--plyr-control-spacing, 10px);
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-            backdrop-filter: blur(8px);
-            padding: 10px;
-            z-index: 10;
-            max-height: 250px;
-            overflow-y: auto;
-        }
-        /* Make menu items look like the screenshot */
-        .plyr__menu__container .plyr__control {
-            background: #e9e9e9;
-            color: #333;
-            width: 150px; /* Fixed width for the menu */
-            text-align: left;
-            padding-left: 15px;
-            margin-bottom: 5px;
-            display: flex;
-            align-items: center;
-        }
-        .plyr__menu__container .plyr__control--forward::before {
-             content: '';
-             display: inline-block;
-             width: 12px;
-             height: 12px;
-             border: 2px solid #aaa;
-             border-radius: 50%;
-             margin-right: 10px;
-        }
-        .plyr__menu__container .plyr__control[aria-checked="true"]::before,
-        .plyr__menu__container .plyr__control:hover::before {
-             background-color: var(--theme-color);
-             border-color: var(--theme-color);
-        }
-         .plyr__menu__container .plyr__control:hover {
-            background: var(--theme-color);
-            color: white;
-         }
+        /* NOTE: No dark theme for the menu container */
 
         .hidden { display: none; }
     </style>
@@ -115,33 +54,88 @@
         document.addEventListener('DOMContentLoaded', () => {
             const formContainer = document.getElementById('form-container');
             const playerContainer = document.getElementById('player-container');
+            if (!playerContainer) return;
+
             const params = new URLSearchParams(window.location.search);
             const videoSrc = params.get('url');
 
             if (videoSrc) {
-                // --- PLAYER LOGIC ---
                 formContainer.classList.add('hidden');
                 playerContainer.classList.remove('hidden');
                 
                 const videoElement = document.getElementById('player');
                 if (Hls.isSupported() && (videoSrc.includes('.m3u8') || videoSrc.includes('.m3u'))) {
-                    const hls = new Hls(); hls.loadSource(videoSrc); hls.attachMedia(videoElement);
-                } else { videoElement.src = videoSrc; }
+                    const hls = new Hls();
+                    hls.loadSource(videoSrc);
+                    hls.attachMedia(videoElement);
+                    window.hls = hls;
+                } else {
+                    videoElement.src = videoSrc;
+                }
 
                 const player = new Plyr(videoElement, {
                     controls: ['rewind', 'play', 'fast-forward', 'progress', 'current-time', 'mute', 'settings', 'fullscreen'],
-                    settings: ['speed', 'loop'],
+                    settings: ['captions', 'quality', 'speed', 'loop'],
                 });
                 window.player = player;
+                
+                // --- THE FINAL, PERMANENT SOLUTION FOR SETTINGS MENU ---
+                player.on('ready', () => {
+                    // This function checks and adds default menu items if they don't exist
+                    const defaultQuality = 720; // Default quality badge
+                    
+                    if (window.hls && hls.levels.length > 0) {
+                        // HLS stream has qualities, let Plyr handle it.
+                    } else if (player.options.quality.options.length === 0) {
+                        // No qualities found, add a placeholder
+                        player.options.quality = {
+                            default: defaultQuality,
+                            options: [defaultQuality],
+                            forced: true,
+                            onChange: () => {} // Dummy function
+                        };
+                    }
 
-                // --- FINAL Double-tap fix ---
+                    // This forces Plyr to re-build its UI, including the settings menu
+                    player.elements.settings.buttons.settings.addEventListener('click', () => {
+                         // Add custom items right before the menu is shown
+                        setTimeout(() => addCustomSettings(player), 0);
+                    }, { once: true });
+                });
+
+                function addCustomSettings(player) {
+                    const settingsMenu = player.elements.menu?.querySelector('ul');
+                    if (!settingsMenu || settingsMenu.querySelector('.custom-separator')) return;
+
+                    const separator = document.createElement('li');
+                    separator.className = 'plyr__menu__item custom-separator';
+                    separator.setAttribute('role', 'separator');
+                    
+                    settingsMenu.appendChild(separator);
+                    settingsMenu.appendChild(createCustomMenuItem('Accessibility', () => alert('Accessibility options coming soon!')));
+                    settingsMenu.appendChild(createCustomMenuItem('Subtitle Editor', () => alert('Subtitle Editor is a planned feature.')));
+                }
+
+                function createCustomMenuItem(text, onClick) {
+                    const li = document.createElement('li');
+                    li.className = 'plyr__menu__item';
+                    li.innerHTML = `<button type="button" class="plyr__control plyr__control--forward">${text}</button>`;
+                    li.addEventListener('click', () => {
+                        onClick();
+                        player.toggleMenu(false);
+                    });
+                    return li;
+                }
+
+                // Final Double-tap fix
                 let lastTap = 0;
                 const playerWrapper = player.elements.container.querySelector('.plyr__video-wrapper');
                 const skipIndicator = document.getElementById('skip-indicator');
                 playerWrapper.addEventListener('click', event => {
                     const currentTime = new Date().getTime();
                     if (currentTime - lastTap < 300) {
-                        event.preventDefault(); event.stopPropagation();
+                        event.preventDefault();
+                        event.stopPropagation();
                         const rect = playerWrapper.getBoundingClientRect();
                         const pos = event.clientX - rect.left;
                         if (pos < rect.width / 2) { player.rewind(10); showSkipIndicator('- 10s'); } 
@@ -150,31 +144,20 @@
                     lastTap = currentTime;
                 });
                 function showSkipIndicator(text) {
-                    skipIndicator.textContent = text;
-                    skipIndicator.style.opacity = 1;
-                    setTimeout(() => { skipIndicator.style.opacity = 0; }, 500);
+                     skipIndicator.textContent = text;
+                     skipIndicator.style.opacity = 1;
+                     setTimeout(() => { skipIndicator.style.opacity = 0; }, 500);
                 }
 
-                // --- NEW Auto-rotate on fullscreen ---
+                // Auto-rotate on fullscreen
                 async function setOrientation(mode) {
                     try {
-                        if (mode === 'lock' && screen.orientation) {
-                            await screen.orientation.lock('landscape');
-                        } else if (mode === 'unlock' && screen.orientation) {
-                            screen.orientation.unlock();
-                        }
-                    } catch (err) {
-                        console.warn("Screen orientation API not supported or permission denied.", err);
-                    }
+                        if (mode === 'lock' && screen.orientation) await screen.orientation.lock('landscape');
+                        else if (mode === 'unlock' && screen.orientation) screen.orientation.unlock();
+                    } catch (err) { console.warn("Screen orientation API is not supported."); }
                 }
                 player.on('enterfullscreen', () => setOrientation('lock'));
                 player.on('exitfullscreen', () => setOrientation('unlock'));
-
-                // --- FINAL LOGIC to always show settings menus ---
-                player.on('ready', () => {
-                    forceRenderAllSettings(player);
-                });
-                function forceRenderAllSettings(player) { /* This function remains the same as it is robust */ }
 
             } else {
                 // --- HOMEPAGE FORM LOGIC ---
