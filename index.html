@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Perfected Plyr Player - Final Version</title>
+    <title>The Stable & Perfected Plyr Player</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
@@ -33,6 +33,12 @@
         :root { --plyr-color-main: var(--theme-color); --plyr-control-radius: 8px; }
         .plyr--video .plyr__control:hover { background: var(--theme-color); }
         .plyr__progress input { box-shadow: var(--theme-glow); }
+        
+        /* This class will be added by JS to fix the menu position */
+        .plyr__menu__container.shifted {
+            left: auto;
+            right: 5px;
+        }
 
         .hidden { display: none; }
     </style>
@@ -69,35 +75,34 @@
                 }
 
                 const player = new Plyr(videoElement, {
+                    // Controls are set as you requested
                     controls: ['rewind', 'play', 'fast-forward', 'progress', 'current-time', 'mute', 'settings', 'fullscreen'],
+                    // This tells Plyr what to show IF the video supports it. 'speed' and 'loop' are always available.
                     settings: ['captions', 'quality', 'speed', 'loop'],
                 });
                 window.player = player;
                 
-                // --- PERMANENT SOLUTION FOR SETTINGS MENU OVERFLOW ---
+                // --- PERMANENT AND STABLE SOLUTION FOR SETTINGS MENU OVERFLOW ---
                 player.on('ready', () => {
                     const settingsBtn = player.elements.buttons.settings;
                     if (settingsBtn) {
                         settingsBtn.addEventListener('click', () => {
-                            // Use a timeout to ensure the menu is rendered before we check its position
-                            setTimeout(() => {
+                            // requestAnimationFrame waits for the next browser repaint, ensuring the menu is rendered
+                            requestAnimationFrame(() => {
                                 const menu = player.elements.menu;
                                 if (!menu) return;
+
                                 const menuRect = menu.getBoundingClientRect();
                                 const playerRect = player.elements.container.getBoundingClientRect();
 
-                                // If the menu is going off the right edge of the player
+                                // If the menu is going off the right edge of the player, add the 'shifted' class
                                 if (menuRect.right > playerRect.right) {
-                                    menu.style.left = 'auto';
-                                    menu.style.right = '5px'; // Adjust position from the right edge
+                                    menu.classList.add('shifted');
+                                } else {
+                                    menu.classList.remove('shifted');
                                 }
-                            }, 0);
+                            });
                         });
-                    }
-
-                    // Add a placeholder quality if none are detected
-                    if (player.options.quality.options.length === 0) {
-                        player.options.quality = { default: 'Auto', options: ['Auto'], forced: true, onChange: () => {} };
                     }
                 });
 
