@@ -3,17 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Ultimate Custom Pro Player</title>
+    <title>StreamLink Pro - Final Masterpiece</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 
     <style>
         :root {
-            --theme-color: #9D00FF; --theme-glow: 0 0 15px rgba(157, 0, 255, 0.6);
-            --bg-color: #0f0f1a; --surface-color: rgba(22, 22, 34, 0.8);
-            --text-color: #f0f0f0; --text-muted: #a0a0b0;
+            --theme-color: #A020F0; /* A rich, vibrant purple */
+            --theme-glow: 0 0 20px rgba(160, 32, 240, 0.7);
+            --bg-color: #0A0A10;
+            --surface-color: rgba(22, 22, 34, 0.85);
+            --text-color: #EAEAEA;
+            --text-muted: #A0A0B0;
         }
         body, html { margin: 0; padding: 0; font-family: 'Poppins', sans-serif; background-color: var(--bg-color); color: var(--text-color); overflow: hidden; }
 
@@ -24,64 +27,79 @@
         input, textarea { width: 100%; padding: 15px; margin-bottom: 20px; border: 1px solid rgba(255, 255, 255, 0.2); background-color: rgba(0, 0, 0, 0.3); color: var(--text-color); border-radius: 8px; box-sizing: border-box; font-size: 1rem; }
         button { width: 100%; padding: 15px; background: var(--theme-color); color: white; border: none; border-radius: 8px; font-size: 1.1rem; font-weight: 600; cursor: pointer; transition: all 0.2s; box-shadow: var(--theme-glow); }
         
-        /* --- CUSTOM PLAYER STYLES --- */
-        .player-container { width: 100vw; height: 100vh; background-color: #000; position: relative; display: flex; justify-content: center; align-items: center; }
-        video { width: 100%; height: 100%; object-fit: contain; }
+        /* --- MASTERPIECE CUSTOM PLAYER STYLES --- */
+        .player-container { width: 100vw; height: 100vh; background-color: #000; position: relative; display: flex; justify-content: center; align-items: center; user-select: none; }
+        video { width: 100%; height: 100%; object-fit: contain; z-index: 1; }
+        
         .controls-container {
             position: absolute; bottom: 0; left: 0; right: 0; z-index: 20;
-            padding: 10px 20px;
-            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+            padding: 0 25px 15px 25px;
+            background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.5) 70%, transparent 100%);
             display: flex; flex-direction: column;
-            opacity: 1; transition: opacity 0.3s ease-in-out;
+            opacity: 1; transition: opacity 0.4s cubic-bezier(0.25, 1, 0.5, 1);
         }
         .player-container.hide-controls .controls-container { opacity: 0; pointer-events: none; }
         
-        .progress-controls { display: flex; align-items: center; width: 100%; margin-bottom: 5px; }
-        .progress-bar { -webkit-appearance: none; appearance: none; width: 100%; height: 5px; background: rgba(255,255,255,0.3); border-radius: 5px; outline: none; transition: height 0.2s ease; cursor: pointer; }
-        .progress-bar:hover { height: 8px; }
-        .progress-bar::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 18px; height: 18px; background: var(--theme-color); border-radius: 50%; box-shadow: var(--theme-glow); }
-        
+        /* Progress Bar */
+        .progress-bar-container { width: 100%; padding: 10px 0; cursor: pointer; }
+        .progress-bar-total { width: 100%; height: 5px; background: rgba(255,255,255,0.3); border-radius: 5px; position: relative; }
+        .progress-bar-current { height: 100%; width: 0%; background: var(--theme-color); border-radius: 5px; }
+        .progress-bar-thumb { position: absolute; top: 50%; transform: translate(-50%, -50%); width: 16px; height: 16px; background: white; border-radius: 50%; box-shadow: var(--theme-glow); opacity: 0; transition: opacity 0.2s; }
+        .progress-bar-container:hover .progress-bar-thumb { opacity: 1; }
+        .progress-bar-container:hover .progress-bar-total { height: 7px; }
+
         .button-controls { display: flex; justify-content: space-between; align-items: center; }
-        .time-display { font-size: 0.9rem; white-space: nowrap; margin-right: 15px; }
+        .time-display { font-size: 0.9rem; font-weight: 500; white-space: nowrap; margin-right: 15px; }
         .button-controls .left, .button-controls .center, .button-controls .right { display: flex; align-items: center; gap: 15px; }
         .control-button { background: none; border: none; padding: 0; cursor: pointer; }
-        .control-button svg { width: 26px; height: 26px; fill: white; transition: transform 0.2s; }
+        .control-button svg { width: 28px; height: 28px; fill: white; filter: drop-shadow(0 0 5px rgba(0,0,0,0.5)); transition: transform 0.2s, fill 0.2s; }
         .control-button:hover svg { fill: var(--theme-color); transform: scale(1.1); }
         #play-pause-btn svg.play-icon { display: none; }
         .player-container.paused #play-pause-btn svg.play-icon { display: block; }
         .player-container.paused #play-pause-btn svg.pause-icon { display: none; }
         
+        /* Skip Indicator */
         .skip-indicator { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: white; background: rgba(0, 0, 0, 0.7); padding: 10px 20px; border-radius: 20px; font-size: 1.2rem; z-index: 50; opacity: 0; transition: opacity 0.3s ease-out; pointer-events: none; }
         
-        .settings-menu {
-            position: absolute; bottom: 70px; right: 20px; z-index: 40;
-            background: rgba(255, 255, 255, 0.98); backdrop-filter: blur(10px);
-            border-radius: 12px; box-shadow: 0 5px 25px rgba(0,0,0,0.3);
-            padding: 10px; max-height: 280px; overflow-y: auto; color: #333;
+        /* New Settings Sub-Bar */
+        .settings-sub-bar {
+            display: flex; justify-content: center; align-items: center; gap: 20px;
+            padding: 8px 0; max-height: 0; overflow: hidden;
+            transition: max-height 0.3s cubic-bezier(0.25, 1, 0.5, 1);
         }
-        .settings-section h4 { font-size: 0.8rem; color: #888; margin: 5px 10px; text-transform: uppercase; }
-        .settings-button {
-            display: flex; align-items: center; width: 180px; height: 40px;
-            padding: 0 15px; background: #f0f0f0; border: none; border-radius: 8px;
-            margin-bottom: 5px; cursor: pointer; font-family: 'Poppins', sans-serif;
-            font-size: 0.9rem; text-align: left; transition: background-color 0.2s;
-        }
-        .settings-button:hover { background-color: #ddd; }
-        .settings-button.active { background-color: var(--theme-color); color: white; }
-        .settings-button::before { content: ''; display: inline-block; width: 12px; height: 12px; border: 2px solid #aaa; border-radius: 50%; margin-right: 12px; }
-        .settings-button.active::before { background-color: white; border-color: white; }
-
+        .player-container.settings-active .settings-sub-bar { max-height: 60px; }
+        .setting-group { display: flex; align-items: center; gap: 8px; font-size: 0.9rem; }
+        .setting-group button { background: rgba(255,255,255,0.1); color: var(--text-muted); border: 1px solid rgba(255,255,255,0.2); padding: 5px 12px; border-radius: 15px; cursor: pointer; transition: all 0.2s; }
+        .setting-group button:hover { background: rgba(255,255,255,0.2); color: white; }
+        .setting-group button.active { background: var(--theme-color); color: white; border-color: var(--theme-color); }
+        
         .hidden { display: none; }
     </style>
 </head>
 <body>
-    <div id="form-container" class="form-container"></div>
+    <div id="form-container" class="form-container"><!-- Populated by JS --></div>
     <div id="player-container" class="player-container hidden paused">
-        <!-- The video tag will be inserted here by JS -->
+        <!-- Video tag will be created by JS -->
         <div class="skip-indicator"></div>
         <div class="controls-container">
-            <div class="progress-controls">
-                <input type="range" class="progress-bar" value="0" min="0" max="100" step="0.1">
+            <div class="settings-sub-bar">
+                <div class="setting-group" id="speed-controls">
+                    <span>Speed:</span>
+                    <button data-speed="0.75">0.75x</button>
+                    <button data-speed="1" class="active">Normal</button>
+                    <button data-speed="1.25">1.25x</button>
+                    <button data-speed="1.5">1.5x</button>
+                </div>
+                 <div class="setting-group" id="quality-controls">
+                    <span>Quality:</span>
+                    <button class="active">Auto</button>
+                </div>
+            </div>
+            <div class="progress-bar-container">
+                <div class="progress-bar-total">
+                    <div class="progress-bar-current"></div>
+                    <div class="progress-bar-thumb"></div>
+                </div>
             </div>
             <div class="button-controls">
                 <div class="left">
@@ -89,14 +107,14 @@
                 </div>
                 <div class="center">
                     <button class="control-button" id="rewind-btn">
-                        <svg viewBox="0 0 24 24"><path d="M11 18V6l-8.5 6 8.5 6zm.5-6l8.5 6V6l-8.5 6z"></path></svg>
+                        <svg viewBox="0 0 24 24"><path d="M11.5 12l8.5 6V6l-8.5 6zm-8.5 6V6l8.5 6-8.5 6z"></path></svg>
                     </button>
                     <button class="control-button" id="play-pause-btn">
                         <svg class="play-icon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"></path></svg>
                         <svg class="pause-icon" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"></path></svg>
                     </button>
                     <button class="control-button" id="forward-btn">
-                        <svg viewBox="0 0 24 24"><path d="M4 18l8.5-6L4 6v12zm9-12v12l8.5-6L13 6z"></path></svg>
+                        <svg viewBox="0 0 24 24"><path d="M4 6v12l8.5-6L4 6zm8.5 6l8.5 6V6l-8.5 6z"></path></svg>
                     </button>
                 </div>
                 <div class="right">
@@ -104,7 +122,7 @@
                         <svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"></path></svg>
                     </button>
                     <button class="control-button" id="settings-btn">
-                         <svg viewBox="0 0 24 24"><path d="M19.43 12.98c.04-.32.07-.64.07-.98s-.03-.66-.07-.98l2.11-1.65c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65C14.46 2.18 14.25 2 14 2h-4c-.25 0-.46.18-.49.42l-.38 2.65c-.61.25-1.17.59-1.69.98l-2.49-1c-.23-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64l2.11 1.65c-.04.32-.07.65-.07.98s.03.66.07.98l-2.11 1.65c-.19.15-.24.42-.12.64l2 3.46c.12.22.39.3.61.22l2.49-1c.52.4 1.08.73 1.69.98l.38 2.65c.03.24.24.42.49.42h4c.25 0 .46-.18.49-.42l.38-2.65c.61-.25 1.17-.59 1.69-.98l2.49 1c.23.09.49 0 .61-.22l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.65zM12 15.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z"></path></svg>
+                         <svg viewBox="0 0 24 24"><path d="M19.43 12.98c.04-.32.07-.64.07-.98s-.03-.66-.07-.98l2.11-1.65c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65C14.46 2.18 14.25 2 14 2h-4c-.25 0-.46.18-.49.42l-.38 2.65c-.61.25-1.17.59-1.69.98l-2.49-1c-.23-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64l2.11 1.65c-.04.32-.07.65-.07.98s.03.66.07.98l-2.11 1.65c-.19.15-.24.42-.12.64l2 3.46c.12.22.39.3.61.22l2.49-1c.52.4 1.08.73 1.69.98l.38 2.65c.03.24.24.42.49.42h4c.25 0 .46-.18.49-.42l.38-2.65c.61-.25 1.17-.59-1.69-.98l2.49 1c.23.09.49 0 .61-.22l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.65zM12 15.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z"></path></svg>
                     </button>
                      <button class="control-button" id="fullscreen-btn">
                         <svg viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"></path></svg>
@@ -112,7 +130,6 @@
                 </div>
             </div>
         </div>
-        <div class="settings-menu hidden"></div>
     </div>
 
     <script>
@@ -145,12 +162,13 @@
                 const playPauseBtn = document.getElementById('play-pause-btn');
                 const rewindBtn = document.getElementById('rewind-btn');
                 const forwardBtn = document.getElementById('forward-btn');
-                const progressBar = document.querySelector('.progress-bar');
+                const progressBarContainer = document.querySelector('.progress-bar-container');
+                const progressBarCurrent = document.querySelector('.progress-bar-current');
+                const progressBarThumb = document.querySelector('.progress-bar-thumb');
                 const timeDisplay = document.querySelector('.time-display');
                 const muteBtn = document.getElementById('mute-btn');
                 const settingsBtn = document.getElementById('settings-btn');
                 const fullscreenBtn = document.getElementById('fullscreen-btn');
-                const settingsMenu = document.querySelector('.settings-menu');
                 const skipIndicator = document.querySelector('.skip-indicator');
 
                 // --- PLAYER FUNCTIONS ---
@@ -163,16 +181,22 @@
                 forwardBtn.addEventListener('click', () => skip(10));
                 video.addEventListener('play', () => playerContainer.classList.remove('paused'));
                 video.addEventListener('pause', () => playerContainer.classList.add('paused'));
+                
                 video.addEventListener('timeupdate', () => {
                     const percent = (video.currentTime / video.duration) * 100;
-                    progressBar.value = percent;
+                    progressBarCurrent.style.width = `${percent}%`;
+                    progressBarThumb.style.left = `${percent}%`;
                     const currentTime = new Date(video.currentTime * 1000).toISOString().substr(14, 5);
-                    const totalTime = new Date(video.duration * 1000).toISOString().substr(14, 5);
+                    const totalTime = isNaN(video.duration) ? '00:00' : new Date(video.duration * 1000).toISOString().substr(14, 5);
                     timeDisplay.textContent = `${currentTime} / ${totalTime}`;
                 });
-                progressBar.addEventListener('input', (e) => {
-                    video.currentTime = (e.target.value / 100) * video.duration;
+
+                progressBarContainer.addEventListener('click', (e) => {
+                    const rect = progressBarContainer.getBoundingClientRect();
+                    const percent = (e.clientX - rect.left) / rect.width;
+                    video.currentTime = percent * video.duration;
                 });
+                
                 muteBtn.addEventListener('click', () => video.muted = !video.muted);
                 fullscreenBtn.addEventListener('click', () => {
                     if (!document.fullscreenElement) {
@@ -185,12 +209,7 @@
                 });
                 settingsBtn.addEventListener('click', (e) => {
                     e.stopPropagation();
-                    settingsMenu.classList.toggle('hidden');
-                });
-                playerContainer.addEventListener('click', (e) => {
-                    if (e.target === playerContainer || e.target === video) {
-                       settingsMenu.classList.add('hidden');
-                    }
+                    playerContainer.classList.toggle('settings-active');
                 });
 
                 // Auto-hide controls
@@ -207,9 +226,12 @@
                 playerContainer.addEventListener('mouseleave', hideControls);
                 showControls();
 
-                // Double-tap skip
+                // Double-tap skip (Final Solution)
                 let lastTap = 0;
-                video.addEventListener('click', event => {
+                playerContainer.addEventListener('click', event => {
+                    // Prevent interfering with controls
+                    if (event.target !== video && event.target !== playerContainer) return;
+
                     const currentTime = new Date().getTime();
                     if (currentTime - lastTap < 300) {
                         event.preventDefault();
@@ -233,26 +255,18 @@
                     try {
                         if (mode === 'lock' && screen.orientation) await screen.orientation.lock('landscape');
                         else if (mode === 'unlock' && screen.orientation) screen.orientation.unlock();
-                    } catch (err) { console.warn("Screen orientation API not supported."); }
+                    } catch (err) { console.warn("Screen orientation API is not supported."); }
                 }
 
-                // Render Settings Menu
-                const renderSettings = () => {
-                     settingsMenu.innerHTML = `
-                        <div class="settings-section">
-                            <h4>Speed</h4>
-                            <button class="settings-button ${video.playbackRate === 1 ? 'active' : ''}" onclick="setSpeed(1)">Normal</button>
-                            <button class="settings-button ${video.playbackRate === 1.25 ? 'active' : ''}" onclick="setSpeed(1.25)">1.25x</button>
-                            <button class="settings-button ${video.playbackRate === 1.5 ? 'active' : ''}" onclick="setSpeed(1.5)">1.5x</button>
-                        </div>
-                        <div class="settings-section">
-                            <h4>Quality</h4>
-                            <button class="settings-button active">Auto</button>
-                        </div>
-                    `;
-                };
-                window.setSpeed = (rate) => { video.playbackRate = rate; renderSettings(); };
-                renderSettings();
+                // Settings Controls
+                const speedControls = document.getElementById('speed-controls');
+                speedControls.addEventListener('click', (e) => {
+                    if (e.target.tagName === 'BUTTON') {
+                        video.playbackRate = e.target.dataset.speed;
+                        speedControls.querySelector('.active').classList.remove('active');
+                        e.target.classList.add('active');
+                    }
+                });
             
             } else {
                 // --- HOMEPAGE FORM LOGIC ---
