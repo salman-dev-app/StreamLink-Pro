@@ -32,12 +32,6 @@
         :root { --plyr-color-main: var(--theme-color); --plyr-control-radius: 8px; --plyr-font-family: 'Poppins', sans-serif; }
         .plyr--video .plyr__control:hover { background: var(--theme-color); }
         
-        /* This class will be added by JS to fix the menu position */
-        .plyr__menu__container.shifted {
-            left: auto;
-            right: 5px;
-        }
-
         .hidden { display: none; }
     </style>
 </head>
@@ -71,7 +65,7 @@
                 const player = new Plyr(videoElement, {
                     // Controls updated as per your latest request
                     controls: [
-                        'play-large', 'play', 'progress', 'current-time', /* 'mute' and 'volume' are removed */
+                        'play-large', 'play', 'progress', 'current-time', /* 'mute' and 'volume' are handled via CSS */
                         'captions', 'settings', 'pip', 'airplay', 'fullscreen'
                     ],
                     settings: ['captions', 'quality', 'speed', 'loop'],
@@ -80,23 +74,11 @@
 
                 // --- STABLE FIXES & FUNCTIONALITY ---
                 
-                // 1. Permanent fix for settings menu overflow
+                // 1. Hide the volume control using CSS
                 player.on('ready', () => {
-                    const settingsBtn = player.elements.buttons.settings;
-                    if (settingsBtn) {
-                        settingsBtn.addEventListener('click', () => {
-                            requestAnimationFrame(() => {
-                                const menu = player.elements.menu;
-                                if (!menu) return;
-                                const menuRect = menu.getBoundingClientRect();
-                                const playerRect = player.elements.container.getBoundingClientRect();
-                                if (menuRect.right > playerRect.right) {
-                                    menu.classList.add('shifted');
-                                } else {
-                                    menu.classList.remove('shifted');
-                                }
-                            });
-                        });
+                    const volumeControl = player.elements.container.querySelector('.plyr__volume');
+                    if(volumeControl) {
+                        volumeControl.style.display = 'none';
                     }
                 });
 
